@@ -4,7 +4,10 @@
   "autoload": {
     "psr-4" : {
       "Synga\\InheritanceFinder\\" : "src"
-    }
+    },
+    "exclude-from-classmap": [
+      "/Tests/"
+    ]
   },
   "authors": [
     {

@@ -1,6 +1,10 @@
 <?php
 namespace Synga\InheritanceFinder\Tests;
 
+include_once 'TraitHelpers/NamespaceHelperTraitPublic.php';
+
+use Synga\InheritanceFinder\Tests\TraitHelpers\NamespaceHelperTraitHelper;
+
 class NamespaceHelperTest extends \PHPUnit_Framework_TestCase
 {
     protected $namespaceHelper;
@@ -8,7 +12,7 @@ class NamespaceHelperTest extends \PHPUnit_Framework_TestCase
     protected $testNamespace = 'My\\Test\\Namespace';
 
     protected function setUp() {
-        $this->namespaceHelper = new NamespaceHelperTraitPublic();
+        $this->namespaceHelper = new NamespaceHelperTraitHelper();
     }
 
     public function testEscapeNamespace() {
