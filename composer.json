@@ -1,6 +1,6 @@
 {
   "name": "synga/inheritance-finder",
-  "description": "Easily find class which extends a certain class",
+  "description": "Easily find classes which extends a certain class",
   "autoload": {
     "psr-4" : {
       "Synga\\InheritanceFinder\\" : "src"

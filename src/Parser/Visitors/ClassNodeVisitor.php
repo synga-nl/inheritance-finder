@@ -13,10 +13,10 @@ use Synga\InheritanceFinder\PhpClass;
 /**
  * This class visits every node from the parser and extracts information and sets it on the PhpClass object.
  *
- * Class ClassVisitor
+ * Class ClassNodeVisitor
  * @package Synga\InheritanceFinder\Parser\Visitors
  */
-class ClassVisitor extends NodeVisitorAbstract
+class ClassNodeVisitor extends NodeVisitorAbstract implements NodeVisitorInterface
 {
     /**
      * The PhpClass object to fill with data from the parser
@@ -29,6 +29,7 @@ class ClassVisitor extends NodeVisitorAbstract
      * Setter for the PhpClass object to fill with data from the parser
      *
      * @param PhpClass $phpClass
+     * @return void
      */
     public function setPhpClass(PhpClass $phpClass) {
         $this->phpClass = $phpClass;

@@ -1,7 +1,7 @@
 <?php
 namespace Synga\InheritanceFinder\Tests;
 
-include_once 'TraitHelpers/NamespaceHelperTraitPublic.php';
+include_once 'TraitHelpers/NamespaceHelperTraitHelper.php';
 
 use Synga\InheritanceFinder\Tests\TraitHelpers\NamespaceHelperTraitHelper;
 

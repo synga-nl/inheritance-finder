@@ -3,38 +3,44 @@ namespace Synga\InheritanceFinder\Tests;
 
 use PhpParser\ParserFactory;
 use Symfony\Component\Finder\Finder;
+use Synga\InheritanceFinder\Cache\CacheBuilder;
+use Synga\InheritanceFinder\Cache\CacheRetriever;
+use Synga\InheritanceFinder\Cache\Strategy\FileCacheStrategy;
+use Synga\InheritanceFinder\InheritanceFinder;
+use Synga\InheritanceFinder\InheritanceFinderFactory;
+use Synga\InheritanceFinder\Parser\Visitors\ClassNodeVisitor;
 use Synga\InheritanceFinder\PhpClass;
-use Synga\InheritanceFinder\PhpFileFinder;
 
 class PhpFileFinderTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var \Synga\InheritanceFinder\PhpFileFinder
+     * @var InheritanceFinder
      */
-    protected $phpFileFinder;
+    protected $inheritanceFinder;
 
-    protected static $cacheFile = __DIR__ . '/classes.php';
+    protected static $cacheDirectory = __DIR__ . '/cache/';
 
     protected $projectRoot;
 
     protected function setUp() {
-        $finder              = new Finder();
-        $this->phpFileFinder = new PhpFileFinder(self::$cacheFile, $finder, (new ParserFactory)->create(ParserFactory::PREFER_PHP7));
-        $this->projectRoot = realpath(__DIR__ . '/TestClasses/');
+        if (!file_exists(self::$cacheDirectory)) {
+            mkdir(self::$cacheDirectory);
+        }
+
+        $this->inheritanceFinder = (new InheritanceFinderFactory())->getInheritanceFinder(self::$cacheDirectory);
+        $this->projectRoot       = realpath(__DIR__ . '/TestClasses/');
     }
 
     public static function tearDownAfterClass(){
-        unlink(self::$cacheFile);
-    }
-
-    public function testBuildCache(){
-        $this->phpFileFinder->buildCache($this->projectRoot);
-        $this->assertFileExists(self::$cacheFile);
-        $this->assertTrue(strlen(file_get_contents(self::$cacheFile)) > 0);
+        if (PHP_OS === 'Windows') {
+            exec('rd /s /q "' . self::$cacheDirectory . '"');
+        } else {
+            exec('rm -rf "' . self::$cacheDirectory . '"');
+        }
     }
 
     public function testFindClass() {
-        $result = $this->phpFileFinder->findClass('\Synga\InheritanceFinder\Tests\TestClasses\ClassA');
+        $result = $this->inheritanceFinder->findClass('\Synga\InheritanceFinder\Tests\TestClasses\ClassA', $this->projectRoot);
 
         $this->checkIfArrayContainsPhpClassObject($result);
 
@@ -44,19 +50,19 @@ class PhpFileFinderTest extends \PHPUnit_Framework_TestCase
     }
 
     public function testFindExtends() {
-        $result = $this->phpFileFinder->findExtends('\Synga\InheritanceFinder\Tests\TestClasses\ClassA');
+        $result = $this->inheritanceFinder->findExtends('\Synga\InheritanceFinder\Tests\TestClasses\ClassA', $this->projectRoot);
         $this->assertCount(2, $result);
         $this->checkIfArrayContainsPhpClassObject($result);
     }
 
     public function testFindImplements(){
-        $result = $this->phpFileFinder->findImplements('\Synga\InheritanceFinder\Tests\TestClasses\InterfaceA');
+        $result = $this->inheritanceFinder->findImplements('\Synga\InheritanceFinder\Tests\TestClasses\InterfaceA', $this->projectRoot);
         $this->assertCount(3, $result);
         $this->checkIfArrayContainsPhpClassObject($result);
     }
 
     public function testFindTraitUse(){
-        $result = $this->phpFileFinder->findTraitUse('\Synga\InheritanceFinder\Tests\TestClasses\TraitB');
+        $result = $this->inheritanceFinder->findTraitUse('\Synga\InheritanceFinder\Tests\TestClasses\TraitB', $this->projectRoot);
         $this->assertCount(1, $result);
         $this->checkIfArrayContainsPhpClassObject($result);
     }

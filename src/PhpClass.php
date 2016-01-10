@@ -6,8 +6,7 @@ use Symfony\Component\Finder\SplFileInfo;
 /**
  * This class contains the data of a file that contains al class, abstract class, interface or trait
  *
- * @todo make checks for extends, implements and trait use so you don't have to do these over and over again when you
- * use it
+ * @todo make checks for extends, implements and trait use so you don't have to do these over and over again when you use it
  *
  * Class PhpClass
  * @package Synga\InheritanceFinder
