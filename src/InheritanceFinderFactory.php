@@ -50,7 +50,7 @@ class InheritanceFinderFactory
         }
 
         return new InheritanceFinder(
-            self::$cacheRetriever
+            self::$cacheRetriever[$cacheDirectory]
         );
     }
 }
