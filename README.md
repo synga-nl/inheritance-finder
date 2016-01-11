@@ -1,5 +1,5 @@
 # Inheritance Finder
-Can find classes which are extended, implemented or is using a certain trait.
+This package can find classes which are extended, implemented or is using a certain trait.
 
 ##Usage
 
@@ -9,7 +9,7 @@ $inheritanceFinder = $inheritanceFinderFactory->getInheritanceFinder('path/to/pr
 $inheritanceFinder->findExtends('SomeNamespace\OtherNamespacePath\Class');
 ```
 
-It will now find all classes which inherit from class `SomeNamespace\OtherNamespacePath\Class` whithin you `path/to/project/root`
+It will now find all classes which inherit from class `SomeNamespace\OtherNamespacePath\Class` whithin your `path/to/project/root`
 
 ##Possible options:
 
@@ -21,3 +21,4 @@ It will now find all classes which inherit from class `SomeNamespace\OtherNamesp
 
 ##Acknowledgements:
 * Right now this package cannot handle multiple classes in one file. I will try to fix this in the near future
+* Right now you can't combine two search methods like searching for an interface and a trait. I am thinking of implement this.
