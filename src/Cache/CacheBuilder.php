@@ -12,6 +12,8 @@ use Synga\InheritanceFinder\PhpClass;
  * Can walk over all the files in a directory recursively. All these files are parsed and it will extract information
  * about classes, interfaces and trait from the parsed nodes.
  *
+ * @todo add building the cache based on the change date so we don't have to parse all files but only the modified and added ones.
+ *
  * Class CacheBuilder
  * @package Synga\InheritanceFinder\Cache
  */
