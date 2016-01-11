@@ -35,8 +35,10 @@ class InheritanceFinderFactory
             self::$phpClass = new PhpClass();
         }
 
-        if (empty(self::$cacheRetriever)) {
-            self::$cacheRetriever = new CacheRetriever(
+        $cacheDirectory = realpath($cacheDirectory);
+
+        if (empty(self::$cacheRetriever[$cacheDirectory])) {
+            self::$cacheRetriever[$cacheDirectory] = new CacheRetriever(
                 new FileCacheStrategy($cacheDirectory),
                 new CacheBuilder(
                     new ClassNodeVisitor(),
