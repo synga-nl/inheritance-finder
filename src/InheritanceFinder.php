@@ -8,6 +8,8 @@ use Synga\InheritanceFinder\Cache\CacheRetriever;
  * Can build a cache of all the classes in a certain directory (usually your whole project) and can find which classes
  * extend or implement a class, or uses a certain trait.
  *
+ * @todo make sure you can force a new cache.
+ *
  * Class InheritanceFinder
  * @package Synga\InheritanceFinder
  */

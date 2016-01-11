@@ -11,7 +11,7 @@ use Synga\InheritanceFinder\InheritanceFinderFactory;
 use Synga\InheritanceFinder\Parser\Visitors\ClassNodeVisitor;
 use Synga\InheritanceFinder\PhpClass;
 
-class PhpFileFinderTest extends \PHPUnit_Framework_TestCase
+class InheritanceFinderTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var InheritanceFinder
