@@ -1,14 +1,8 @@
 <?php
 namespace Synga\InheritanceFinder\Tests;
 
-use PhpParser\ParserFactory;
-use Symfony\Component\Finder\Finder;
-use Synga\InheritanceFinder\Cache\CacheBuilder;
-use Synga\InheritanceFinder\Cache\CacheRetriever;
-use Synga\InheritanceFinder\Cache\Strategy\FileCacheStrategy;
 use Synga\InheritanceFinder\InheritanceFinder;
 use Synga\InheritanceFinder\InheritanceFinderFactory;
-use Synga\InheritanceFinder\Parser\Visitors\ClassNodeVisitor;
 use Synga\InheritanceFinder\PhpClass;
 
 class InheritanceFinderTest extends \PHPUnit_Framework_TestCase
@@ -28,7 +22,7 @@ class InheritanceFinderTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->inheritanceFinder = (new InheritanceFinderFactory())->getInheritanceFinder(self::$cacheDirectory);
-        $this->projectRoot       = realpath(__DIR__ . '/TestClasses/');
+        $this->projectRoot       = realpath('/Applications/MAMP/htdocs/inheritance-finder');
     }
 
     public static function tearDownAfterClass(){

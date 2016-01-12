@@ -36,13 +36,13 @@ class CacheRetrieverTest extends \PHPUnit_Framework_TestCase
         $this->projectRoot = realpath(__DIR__ . '/TestClasses/');
     }
 
-    public static function tearDownAfterClass() {
-        if (PHP_OS === 'Windows') {
-            exec('rd /s /q "' . self::$cacheDirectory . '"');
-        } else {
-            exec('rm -rf "' . self::$cacheDirectory . '"');
-        }
-    }
+//    public static function tearDownAfterClass() {
+//        if (PHP_OS === 'Windows') {
+//            exec('rd /s /q "' . self::$cacheDirectory . '"');
+//        } else {
+//            exec('rm -rf "' . self::$cacheDirectory . '"');
+//        }
+//    }
 
     public function testRetrieveCacheWarmUp() {
         $this->cacheRetriever->retrieve($this->projectRoot);

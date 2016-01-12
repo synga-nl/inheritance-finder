@@ -86,7 +86,9 @@ class CacheBuilder implements CacheBuilderInterface
 
                 $phpClass->setFile($file);
 
-                $this->phpFiles[] = $phpClass;
+                $phpClass->setLastModified((new \DateTime())->setTimestamp($file->getMTime()));
+
+                $this->phpFiles[$phpClass->getFullQualifiedNamespace()] = $phpClass;
             } catch (\Exception $e) {
 
             }
@@ -96,8 +98,8 @@ class CacheBuilder implements CacheBuilderInterface
     }
 
     /**
-     * Checks if current call is first by detecting if $this->classes and $this->phpFiles is empty. When it isn't it is
-     * the first call and we fill up the variables with an empty array
+     * Checks if current call is first by detecting if $this->classes and $this->phpFiles is empty. When these are empty
+     * this is the first call and we fill up the variables with an empty array
      *
      * @return bool
      */

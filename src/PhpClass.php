@@ -55,6 +55,11 @@ class PhpClass
     protected $file;
 
     /**
+     * @var \DateTime
+     */
+    protected $lastModified;
+
+    /**
      * The class type of the class. Check the TYPE_ constants for possible values
      *
      * @var int
@@ -208,6 +213,20 @@ class PhpClass
      */
     public function setTraits($traits) {
         $this->traits[] = $traits;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getLastModified() {
+        return $this->lastModified;
+    }
+
+    /**
+     * @param \DateTime $lastModified
+     */
+    public function setLastModified(\DateTime $lastModified) {
+        $this->lastModified = $lastModified;
     }
 
     /**

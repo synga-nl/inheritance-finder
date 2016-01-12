@@ -84,14 +84,14 @@ class CacheRetriever
                 $retrievedCache = $this->cacheStrategy->get($directory);
                 if ($retrievedCache === false) {
                     $cache = $this->cacheBuilder->build($directory, $this->phpClass);
-
-                    $this->generateLocalCache($directory, $cache);
-
                     $this->cacheStrategy->set($directory, $cache, 24 * 3600);
                 } else {
+
                     $cache = $retrievedCache;
                 }
             }
+
+            $this->generateLocalCache($directory, $cache);
         } else {
             $cache = $localCache;
         }
