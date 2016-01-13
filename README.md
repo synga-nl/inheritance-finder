@@ -21,4 +21,5 @@ It will now find all classes which inherit from class `SomeNamespace\OtherNamesp
 
 ##Acknowledgements:
 * Right now this package cannot handle multiple classes in one file. I will try to fix this in the near future
+* Right now this class cannot handle classes that are in the same namespace
 * Right now you can't combine two search methods like searching for an interface and a trait. I am thinking of implement this.

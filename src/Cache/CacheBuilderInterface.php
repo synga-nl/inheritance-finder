@@ -14,7 +14,6 @@ interface CacheBuilderInterface
      *
      * @param $searchDirectory
      * @param PhpClass $phpClassClone
-     * @param int $expire
      */
-    public function build($searchDirectory, PhpClass $phpClassClone, $expire = -1);
+    public function build($searchDirectory, PhpClass $phpClassClone);
 }

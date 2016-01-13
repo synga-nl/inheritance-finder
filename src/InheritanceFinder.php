@@ -94,6 +94,15 @@ class InheritanceFinder
     }
 
     /**
+     * Gets the cache retriever
+     *
+     * @return CacheRetriever
+     */
+    public function getCacheRetriever() {
+        return $this->cacheRetriever;
+    }
+
+    /**
      * Can find implements or detect trait use
      *
      * @param $fullQualifiedNamespace
@@ -101,13 +110,13 @@ class InheritanceFinder
      * @param $type
      * @return array
      */
-    protected function findImplementsOrTraitUse($fullQualifiedNamespace, $directory, $type){
+    protected function findImplementsOrTraitUse($fullQualifiedNamespace, $directory, $type) {
         $fullQualifiedNamespace = ltrim($fullQualifiedNamespace, '\\');
 
         $phpClasses = [];
 
         foreach ($this->cacheRetriever->retrieve($directory) as $phpClass) {
-            $implementsOrTrait = $phpClass->{'get'.ucfirst($type)}();
+            $implementsOrTrait = $phpClass->{'get' . ucfirst($type)}();
             if (is_array($implementsOrTrait) && in_array($fullQualifiedNamespace, $implementsOrTrait)) {
                 $phpClasses[] = $phpClass;
                 $phpClasses   = array_merge($phpClasses, $this->findExtends($phpClass->getFullQualifiedNamespace(), $directory));

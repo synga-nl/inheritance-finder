@@ -22,10 +22,10 @@ class InheritanceFinderTest extends \PHPUnit_Framework_TestCase
         }
 
         $this->inheritanceFinder = (new InheritanceFinderFactory())->getInheritanceFinder(self::$cacheDirectory);
-        $this->projectRoot       = realpath('/Applications/MAMP/htdocs/inheritance-finder');
+        $this->projectRoot       = realpath(__DIR__ . '/TestClasses/');
     }
 
-    public static function tearDownAfterClass(){
+    public static function tearDownAfterClass() {
         if (PHP_OS === 'Windows') {
             exec('rd /s /q "' . self::$cacheDirectory . '"');
         } else {
@@ -49,21 +49,21 @@ class InheritanceFinderTest extends \PHPUnit_Framework_TestCase
         $this->checkIfArrayContainsPhpClassObject($result);
     }
 
-    public function testFindImplements(){
+    public function testFindImplements() {
         $result = $this->inheritanceFinder->findImplements('\Synga\InheritanceFinder\Tests\TestClasses\InterfaceA', $this->projectRoot);
         $this->assertCount(3, $result);
         $this->checkIfArrayContainsPhpClassObject($result);
     }
 
-    public function testFindTraitUse(){
+    public function testFindTraitUse() {
         $result = $this->inheritanceFinder->findTraitUse('\Synga\InheritanceFinder\Tests\TestClasses\TraitB', $this->projectRoot);
         $this->assertCount(1, $result);
         $this->checkIfArrayContainsPhpClassObject($result);
     }
 
-    protected function checkIfArrayContainsPhpClassObject($phpClasses){
-        if(is_array($phpClasses)){
-            foreach($phpClasses as $phpClass){
+    protected function checkIfArrayContainsPhpClassObject($phpClasses) {
+        if (is_array($phpClasses)) {
+            foreach ($phpClasses as $phpClass) {
                 $this->assertInstanceOf('Synga\InheritanceFinder\PhpClass', $phpClass);
             }
         } else {

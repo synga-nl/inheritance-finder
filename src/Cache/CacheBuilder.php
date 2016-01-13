@@ -1,11 +1,9 @@
 <?php
 namespace Synga\InheritanceFinder\Cache;
 
-use PhpParser\NodeTraverser;
-use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\Parser;
 use Symfony\Component\Finder\Finder;
-use Synga\InheritanceFinder\Parser\Visitors\NodeVisitorInterface;
+use Synga\InheritanceFinder\Parser\PhpClassParser;
 use Synga\InheritanceFinder\PhpClass;
 
 /**
@@ -20,24 +18,11 @@ use Synga\InheritanceFinder\PhpClass;
 class CacheBuilder implements CacheBuilderInterface
 {
     /**
-     * @var NodeVisitorInterface
-     */
-    private $nodeVisitor;
-
-    /**
      * Finder object which is needed to find all php files
      *
      * @var Finder
      */
     protected $finder;
-
-    /**
-     * The parser which will parse all the php files so we can determine if a php file contains a class, interface or
-     * trait
-     *
-     * @var \PhpParser\Parser
-     */
-    protected $phpParser;
 
     /**
      * The classes we already checked
@@ -54,15 +39,18 @@ class CacheBuilder implements CacheBuilderInterface
     protected $phpFiles;
 
     /**
-     * CacheBuilder constructor.
-     * @param NodeVisitorInterface $nodeVisitor
-     * @param Finder $finder
-     * @param Parser $phpParser
+     * @var PhpClassParser
      */
-    public function __construct(NodeVisitorInterface $nodeVisitor, Finder $finder, Parser $phpParser){
-        $this->nodeVisitor = $nodeVisitor;
-        $this->finder = $finder;
-        $this->phpParser = $phpParser;
+    private $phpClassParser;
+
+    /**
+     * CacheBuilder constructor.
+     * @param Finder $finder
+     * @param PhpClassParser $phpClassParser
+     */
+    public function __construct(Finder $finder, PhpClassParser $phpClassParser) {
+        $this->finder         = $finder;
+        $this->phpClassParser = $phpClassParser;
     }
 
     /**
@@ -70,27 +58,17 @@ class CacheBuilder implements CacheBuilderInterface
      *
      * @param $searchDirectory
      * @param PhpClass $phpClassClone
-     * @param int $expire
      * @return \Synga\InheritanceFinder\PhpClass[]
      */
-    public function build($searchDirectory, PhpClass $phpClassClone, $expire = -1) {
+    public function build($searchDirectory, PhpClass $phpClassClone) {
         $this->isFirstCall();
 
         foreach ($this->findFiles($searchDirectory) as $file) {
-            try {
-                $phpClass = clone $phpClassClone;
+            $phpClass = clone $phpClassClone;
+            $result   = $this->phpClassParser->parse($phpClass, $file);
 
-                $this->nodeVisitor->setPhpClass($phpClass);
-
-                $this->traverse($file->getContents(), [$this->nodeVisitor]);
-
-                $phpClass->setFile($file);
-
-                $phpClass->setLastModified((new \DateTime())->setTimestamp($file->getMTime()));
-
+            if ($result !== false) {
                 $this->phpFiles[$phpClass->getFullQualifiedNamespace()] = $phpClass;
-            } catch (\Exception $e) {
-
             }
         }
 
@@ -128,25 +106,6 @@ class CacheBuilder implements CacheBuilderInterface
         return $phpFiles;
     }
 
-    /**
-     * Traverse the parser nodes so we can extract the information
-     *
-     * @param $content
-     * @param array $nodeVisitors
-     * @internal param bool $addInterface
-     */
-    protected function traverse($content, array $nodeVisitors = []) {
-        $nodes = $this->phpParser->parse($content);
-
-        $traverser = new NodeTraverser;
-        $traverser->addVisitor(new NameResolver());
-
-        foreach ($nodeVisitors as $nodeVisitor) {
-            $traverser->addVisitor($nodeVisitor);
-        }
-
-        $traverser->traverse($nodes);
-    }
 
     /**
      * Find files based on some criteria

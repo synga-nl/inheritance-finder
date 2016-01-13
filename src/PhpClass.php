@@ -14,7 +14,7 @@ use Symfony\Component\Finder\SplFileInfo;
 class PhpClass
 {
     use NamespaceHelper {
-        NamespaceHelper::getFullQualifiedNamespace as getFullQualifiedNamespaceTrait;
+        NamespaceHelper::getFullQualifiedNamespace as protected getFullQualifiedNamespaceTrait;
     }
 
     /**
@@ -227,6 +227,35 @@ class PhpClass
      */
     public function setLastModified(\DateTime $lastModified) {
         $this->lastModified = $lastModified;
+    }
+
+    /**
+     * Checks if we have a valid class object
+     *
+     * @return bool
+     */
+    public function isValid(){
+        if((!empty($this->fullQualifiedNamespace)) || (!empty($this->class))){
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Clears the current object, so when we do an incremental cache build, we can reuse the object when the timestamps
+     * are not the same
+     */
+    public function clear(){
+        foreach(get_object_vars($this) as $property => $value){
+            if(is_array($value)){
+                $tempValue = [];
+            } else {
+                $tempValue = null;
+            }
+
+            $this->{$property} = $tempValue;
+        }
     }
 
     /**

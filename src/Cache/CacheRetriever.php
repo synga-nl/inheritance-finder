@@ -1,13 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: roy
- * Date: 09-01-16
- * Time: 23:16
- */
-
 namespace Synga\InheritanceFinder\Cache;
-
 
 use Synga\InheritanceFinder\Cache\Strategy\CacheStrategyInterface;
 use Synga\InheritanceFinder\PhpClass;
@@ -53,6 +45,10 @@ class CacheRetriever
      * @var PhpClass[]
      */
     private $phpClasses;
+    /**
+     * @var IncrementalCacheBuilderInterface
+     */
+    private $incrementalCacheBuilder;
 
     /**
      * CacheRetriever constructor.
@@ -61,10 +57,11 @@ class CacheRetriever
      * @param CacheBuilder $cacheBuilder
      * @param PhpClass $phpClass
      */
-    public function __construct(CacheStrategyInterface $cacheStrategy, CacheBuilder $cacheBuilder, PhpClass $phpClass) {
-        $this->cacheBuilder  = $cacheBuilder;
-        $this->phpClass      = $phpClass;
-        $this->cacheStrategy = $cacheStrategy;
+    public function __construct(CacheStrategyInterface $cacheStrategy, CacheBuilder $cacheBuilder, IncrementalCacheBuilderInterface $incrementalCacheBuilder, PhpClass $phpClass) {
+        $this->cacheBuilder            = $cacheBuilder;
+        $this->phpClass                = $phpClass;
+        $this->cacheStrategy           = $cacheStrategy;
+        $this->incrementalCacheBuilder = $incrementalCacheBuilder;
     }
 
     /**
@@ -86,8 +83,9 @@ class CacheRetriever
                     $cache = $this->cacheBuilder->build($directory, $this->phpClass);
                     $this->cacheStrategy->set($directory, $cache, 24 * 3600);
                 } else {
+                    $cache = $this->incrementalCacheBuilder->build($directory, $retrievedCache, $this->phpClass);
 
-                    $cache = $retrievedCache;
+                    $this->cacheStrategy->set($directory, $cache, 24 * 3600);
                 }
             }
 
@@ -113,7 +111,7 @@ class CacheRetriever
         }
 
         foreach ($phpClasses as $phpClass) {
-            $fullQualifiedNamespace    = $phpClass->getFullQualifiedNamespace();
+            $fullQualifiedNamespace      = $phpClass->getFullQualifiedNamespace();
             $this->classes[$directory][] = $fullQualifiedNamespace;
             if (!isset($this->phpClasses[$fullQualifiedNamespace])) {
                 $this->phpClasses[$fullQualifiedNamespace] = $phpClass;
