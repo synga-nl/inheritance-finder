@@ -1,6 +1,6 @@
 {
   "name": "synga/inheritance-finder",
-  "description": "Easily find classes which extends a certain class",
+  "description": "This package can find classes which are extended, implemented by a certain class or is using a certain trait.",
   "autoload": {
     "psr-4" : {
       "Synga\\InheritanceFinder\\" : "src"
