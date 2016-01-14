@@ -42,7 +42,7 @@ class InheritanceFinderFactory
      * @param $cacheDirectory
      * @return InheritanceFinder
      */
-    public function getInheritanceFinder($cacheDirectory) {
+    public static function getInheritanceFinder($cacheDirectory) {
         if (empty(self::$phpClass)) {
             self::$phpClass = new PhpClass();
         }

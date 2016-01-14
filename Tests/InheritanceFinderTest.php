@@ -21,7 +21,7 @@ class InheritanceFinderTest extends \PHPUnit_Framework_TestCase
             mkdir(self::$cacheDirectory);
         }
 
-        $this->inheritanceFinder = (new InheritanceFinderFactory())->getInheritanceFinder(self::$cacheDirectory);
+        $this->inheritanceFinder = InheritanceFinderFactory::getInheritanceFinder(self::$cacheDirectory);
         $this->projectRoot       = realpath(__DIR__ . '/TestClasses/');
     }
 

@@ -20,9 +20,7 @@ class CacheRetrieverTest extends \PHPUnit_Framework_TestCase
             mkdir(self::$cacheDirectory);
         }
 
-        $inheritanceFinderFactory = new InheritanceFinderFactory();
-
-        $inheritanceFinder = $inheritanceFinderFactory->getInheritanceFinder(self::$cacheDirectory);
+        $inheritanceFinder = InheritanceFinderFactory::getInheritanceFinder(self::$cacheDirectory);
 
         $this->cacheRetriever = $inheritanceFinder->getCacheRetriever();
 

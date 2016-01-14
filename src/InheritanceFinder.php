@@ -13,7 +13,7 @@ use Synga\InheritanceFinder\Cache\CacheRetriever;
  * Class InheritanceFinder
  * @package Synga\InheritanceFinder
  */
-class InheritanceFinder
+class InheritanceFinder implements InheritanceFinderInterface
 {
     use NamespaceHelper;
 
