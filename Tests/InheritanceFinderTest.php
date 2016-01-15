@@ -70,22 +70,25 @@ class InheritanceFinderTest extends \PHPUnit_Framework_TestCase
             [
                 '\Synga\InheritanceFinder\Tests\TestClasses\InterfaceA'
             ],
-            [
-                '\Synga\InheritanceFinder\Tests\TestClasses\TraitB'
-            ]
+            '\Synga\InheritanceFinder\Tests\TestClasses\TraitB'
         );
 
         $this->assertCount(4, $result);
         $this->checkIfArrayContainsPhpClassObject($result);
     }
 
+    /**
+     * @param PhpClass|PhpClass[] $phpClasses
+     */
     protected function checkIfArrayContainsPhpClassObject($phpClasses) {
         if (is_array($phpClasses)) {
             foreach ($phpClasses as $phpClass) {
                 $this->assertInstanceOf('Synga\InheritanceFinder\PhpClass', $phpClass);
+                $this->assertTrue($phpClass->isValid());
             }
         } else {
             $this->assertInstanceOf('Synga\InheritanceFinder\PhpClass', $phpClasses);
+            $this->assertTrue($phpClasses->isValid());
         }
     }
 }
