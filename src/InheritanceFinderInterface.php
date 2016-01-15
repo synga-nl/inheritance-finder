@@ -1,6 +1,8 @@
 <?php
 namespace Synga\InheritanceFinder;
 
+use Synga\InheritanceFinder\Cache\CacheRetriever;
+
 interface InheritanceFinderInterface
 {
     /**
@@ -45,4 +47,16 @@ interface InheritanceFinderInterface
      * @return CacheRetriever
      */
     public function getCacheRetriever();
+
+    /**
+     * Can find multiple classes, interface and traits. Use this method with care because this can be harsh on your
+     * hardware.
+     *
+     * @param $directory
+     * @param array $classes
+     * @param array $interfaces
+     * @param array $traits
+     * @return mixed
+     */
+    public function findMultiple($directory, $classes = [], $interfaces = [], $traits =[]);
 }

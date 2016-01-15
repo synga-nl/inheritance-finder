@@ -127,6 +127,41 @@ class InheritanceFinder implements InheritanceFinderInterface
     }
 
     /**
+     * @param $directory
+     * @param $classes
+     * @param $interfaces
+     * @param $traits
+     * @return bool|PhpClass[]
+     */
+    public function findMultiple($directory, $classes = [], $interfaces = [], $traits = []) {
+        $classes    = $this->normalizeArray($classes);
+        $interfaces = $this->normalizeArray($interfaces);
+        $traits     = $this->normalizeArray($traits);
+
+        $foundClasses = [];
+
+        if ($classes !== false) {
+            foreach ($classes as $class) {
+                $foundClasses = array_merge($foundClasses, $this->findExtends($class, $directory));
+            }
+        }
+
+        if ($interfaces !== false) {
+            foreach ($interfaces as $interface) {
+                $foundClasses = array_merge($foundClasses, $this->findImplements($interface, $directory));
+            }
+        }
+
+        if ($traits !== false) {
+            foreach ($traits as $trait) {
+                $foundClasses = array_merge($foundClasses, $this->findTraitUse($trait, $directory));
+            }
+        }
+
+        return $this->arrayUniqueObject($foundClasses);
+    }
+
+    /**
      * Makes an array of object unique using the spl_object_hash function
      *
      * @param $phpClasses
@@ -148,5 +183,24 @@ class InheritanceFinder implements InheritanceFinderInterface
         }
 
         return $uniqueArray;
+    }
+
+    /**
+     * Chcecks if var $array is a string, if so, create an array with that string otherwise return the array. If we
+     * couldn't create an array it returns false.
+     *
+     * @param $array
+     * @return array|bool
+     */
+    protected function normalizeArray($array) {
+        if (is_string($array)) {
+            $array = [$array];
+        }
+
+        if (!is_array($array)) {
+            return false;
+        }
+
+        return $array;
     }
 }

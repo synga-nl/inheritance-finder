@@ -61,6 +61,24 @@ class InheritanceFinderTest extends \PHPUnit_Framework_TestCase
         $this->checkIfArrayContainsPhpClassObject($result);
     }
 
+    public function testFindMultiple() {
+        $result = $this->inheritanceFinder->findMultiple($this->projectRoot,
+            [
+                '\Synga\InheritanceFinder\Tests\TestClasses\ClassA',
+                '\Synga\InheritanceFinder\Tests\TestClasses\AbstractClassA'
+            ],
+            [
+                '\Synga\InheritanceFinder\Tests\TestClasses\InterfaceA'
+            ],
+            [
+                '\Synga\InheritanceFinder\Tests\TestClasses\TraitB'
+            ]
+        );
+
+        $this->assertCount(4, $result);
+        $this->checkIfArrayContainsPhpClassObject($result);
+    }
+
     protected function checkIfArrayContainsPhpClassObject($phpClasses) {
         if (is_array($phpClasses)) {
             foreach ($phpClasses as $phpClass) {
