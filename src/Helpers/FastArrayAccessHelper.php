@@ -16,21 +16,6 @@ class FastArrayAccessHelper
      * @param \Synga\InheritanceFinder\PhpClass[]
      * @return \Synga\InheritanceFinder\PhpClass[]
      */
-    public function getNamespaceArray($array) {
-        $result = [];
-
-        foreach ($array as $item) {
-            /* @var $item \Synga\InheritanceFinder\PhpClass */
-            $result[$item->getFullQualifiedNamespace()] = $item;
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param \Synga\InheritanceFinder\PhpClass[]
-     * @return \Synga\InheritanceFinder\PhpClass[]
-     */
     public function getPathnameArray($array){
         $result = [];
 
