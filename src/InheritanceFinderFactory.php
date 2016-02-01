@@ -2,11 +2,8 @@
 namespace Synga\InheritanceFinder;
 
 use PhpParser\ParserFactory;
-use Symfony\Component\Finder\Finder;
-use Synga\InheritanceFinder\Cache\CacheBuilder;
-use Synga\InheritanceFinder\Cache\CacheRetriever;
-use Synga\InheritanceFinder\Cache\IncrementalCacheBuilder;
-use Synga\InheritanceFinder\Cache\Strategy\FileCacheStrategy;
+use Synga\InheritanceFinder\Database\DatabaseConfig;
+use Synga\InheritanceFinder\File\FileConfig;
 use Synga\InheritanceFinder\Parser\PhpClassParser;
 use Synga\InheritanceFinder\Parser\Visitors\ClassNodeVisitor;
 
@@ -17,63 +14,25 @@ use Synga\InheritanceFinder\Parser\Visitors\ClassNodeVisitor;
 class InheritanceFinderFactory
 {
     /**
-     * @var PhpClass
-     */
-    private static $phpClass;
-
-    /**
-     * @var Finder
-     */
-    private static $finder;
-
-    /**
-     * @var CacheRetriever
-     */
-    private static $cacheRetriever;
-
-    /**
-     * @var
-     */
-    private static $phpClassParser;
-
-    /**
      * Makes an InheritanceFinder
      *
-     * @param $cacheDirectory
+     * @param ConfigInterface $config
      * @return InheritanceFinder
      */
-    public static function getInheritanceFinder($cacheDirectory) {
-        if (empty(self::$phpClass)) {
-            self::$phpClass = new PhpClass();
+    public static function getInheritanceFinder(ConfigInterface $config) {
+        if($config instanceof FileConfig){
+            $cacheStrategy = new \Synga\InheritanceFinder\File\CacheStrategy($config);
+        } elseif($config instanceof DatabaseConfig){
+            $cacheStrategy = new \Synga\InheritanceFinder\Database\CacheStrategy($config);
         }
 
-        if (empty(self::$finder)) {
-            self::$finder = new Finder();
-        }
-
-        if (empty(self::$phpClassParser)) {
-            self::$phpClassParser = new PhpClassParser((new ParserFactory)->create(ParserFactory::PREFER_PHP7), new ClassNodeVisitor());
-        }
-
-        $cacheDirectory = realpath($cacheDirectory);
-
-        if (empty(self::$cacheRetriever[$cacheDirectory])) {
-            self::$cacheRetriever[$cacheDirectory] = new CacheRetriever(
-                new FileCacheStrategy($cacheDirectory),
-                new CacheBuilder(
-                    self::$finder,
-                    self::$phpClassParser
-                ),
-                new IncrementalCacheBuilder(
-                    self::$finder,
-                    self::$phpClassParser
-                ),
-                self::$phpClass
-            );
-        }
-
-        return new InheritanceFinder(
-            self::$cacheRetriever[$cacheDirectory]
+        return new \Synga\InheritanceFinder\InheritanceFinder(
+            new \Synga\InheritanceFinder\CacheBuilder(
+                $cacheStrategy,
+                new PhpClassParser((new ParserFactory)->create(ParserFactory::PREFER_PHP7), new ClassNodeVisitor()),
+                new \Symfony\Component\Finder\Finder(),
+                new \Synga\InheritanceFinder\Helpers\FastArrayAccessHelper()
+            )
         );
     }
 }

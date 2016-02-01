@@ -1,105 +1,95 @@
 <?php
+/**
+ * Synga Inheritance Finder
+ * @author      Roy Pouls
+ * @copytright  2016 Roy Pouls / Synga (http://www.synga.nl)
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
+ * @link        https://github.com/synga-nl/inheritance-finder
+ */
+
 namespace Synga\InheritanceFinder;
 
-use PhpParser\Parser;
-use Synga\InheritanceFinder\Cache\CacheRetriever;
 
-/**
- * Can build a cache of all the classes in a certain directory (usually your whole project) and can find which classes
- * extend or implement a class, or uses a certain trait.
- *
- * @todo make sure you can force a new cache.
- *
- * Class InheritanceFinder
- * @package Synga\InheritanceFinder
- */
+use Synga\InheritanceFinder\PhpClass;
+
 class InheritanceFinder implements InheritanceFinderInterface
 {
-    use NamespaceHelper;
+    /**
+     * @var CacheBuilderInterface
+     */
+    private $cacheBuilder;
 
     /**
-     * @var CacheRetriever
+     * @var PhpClass[]
      */
-    private $cacheRetriever;
+    private $localCache = [];
 
-    /**
-     * InheritanceFinder constructor.
-     * @param CacheRetriever $cacheRetriever
-     */
-    public function __construct(CacheRetriever $cacheRetriever) {
-        $this->cacheRetriever = $cacheRetriever;
+    public function __construct(CacheBuilderInterface $cacheBuilder) {
+        $this->cacheBuilder = $cacheBuilder;
     }
 
-    /**
-     * Finds the given class
-     *
-     * @param $fullQualifiedNamespace
-     * @param $directory
-     * @return PhpClass
-     */
-    public function findClass($fullQualifiedNamespace, $directory) {
-        $fullQualifiedNamespace = ltrim($fullQualifiedNamespace, '\\');
-
-        foreach ($this->cacheRetriever->retrieve($directory) as $phpClass) {
-            if ($fullQualifiedNamespace === $phpClass->getFullQualifiedNamespace()) {
-                return $phpClass;
-            }
-        }
-
-        return false;
+    public function findClass($class) {
+        $this->init();
     }
 
-    /**
-     * Finds classes which extend the given class
-     *
-     * @param $fullQualifiedNamespace
-     * @param $directory
-     * @return PhpClass[]
-     */
-    public function findExtends($fullQualifiedNamespace, $directory) {
-        $fullQualifiedNamespace = ltrim($fullQualifiedNamespace, '\\');
+    public function findExtends($class) {
+        $this->init();
+
+
+        $fullQualifiedNamespace = ltrim($class, '\\');
 
         $phpClasses = [];
 
-        foreach ($this->cacheRetriever->retrieve($directory) as $phpClass) {
+        foreach ($this->localCache as $phpClass) {
             if ($fullQualifiedNamespace === $phpClass->getExtends()) {
                 $phpClasses[] = $phpClass;
-                $phpClasses   = array_merge($phpClasses, $this->findExtends($phpClass->getFullQualifiedNamespace(), $directory));
+                $phpClasses   = array_merge($phpClasses, $this->findExtends($phpClass->getFullQualifiedNamespace()));
             }
         }
 
         return $this->arrayUniqueObject($phpClasses);
     }
 
-    /**
-     * Finds classes which implements the given interface
-     *
-     * @param $fullQualifiedNamespace
-     * @param $directory
-     * @return PhpClass[]
-     */
-    public function findImplements($fullQualifiedNamespace, $directory) {
-        return $this->findImplementsOrTraitUse($fullQualifiedNamespace, $directory, 'implements');
+    public function findImplements($interface) {
+        $this->init();
+
+        return $this->findImplementsOrTraitUse($interface, 'traits');
     }
 
-    /**
-     * Finds classes which uses the given trait
-     *
-     * @param $fullQualifiedNamespace
-     * @param $directory
-     * @return array
-     */
-    public function findTraitUse($fullQualifiedNamespace, $directory) {
-        return $this->findImplementsOrTraitUse($fullQualifiedNamespace, $directory, 'traits');
+    public function findTraitUse($trait) {
+        $this->init();
+
+        return $this->findImplementsOrTraitUse($trait, 'traits');
     }
 
-    /**
-     * Gets the cache retriever
-     *
-     * @return CacheRetriever
-     */
-    public function getCacheRetriever() {
-        return $this->cacheRetriever;
+    public function findMultiple($classes = [], $interfaces = [], $traits = []) {
+        $this->init();
+
+        $classes    = $this->normalizeArray($classes);
+        $interfaces = $this->normalizeArray($interfaces);
+        $traits     = $this->normalizeArray($traits);
+
+        $foundClasses = [];
+
+        if ($classes !== false) {
+            foreach ($classes as $class) {
+                $foundClasses = array_merge($foundClasses, $this->findExtends($class));
+            }
+        }
+
+        if ($interfaces !== false) {
+            foreach ($interfaces as $interface) {
+                $foundClasses = array_merge($foundClasses, $this->findImplements($interface));
+            }
+        }
+
+        if ($traits !== false) {
+            foreach ($traits as $trait) {
+                $foundClasses = array_merge($foundClasses, $this->findTraitUse($trait));
+            }
+        }
+
+        return $this->arrayUniqueObject($foundClasses);
     }
 
     /**
@@ -110,55 +100,22 @@ class InheritanceFinder implements InheritanceFinderInterface
      * @param $type
      * @return array
      */
-    protected function findImplementsOrTraitUse($fullQualifiedNamespace, $directory, $type) {
+    protected function findImplementsOrTraitUse($fullQualifiedNamespace, $type) {
         $fullQualifiedNamespace = ltrim($fullQualifiedNamespace, '\\');
 
         $phpClasses = [];
 
-        foreach ($this->cacheRetriever->retrieve($directory) as $phpClass) {
-            $implementsOrTrait = $phpClass->{'get' . ucfirst($type)}();
+        $method = 'get' . ucfirst($type);
+
+        foreach ($this->localCache as $phpClass) {
+            $implementsOrTrait = $phpClass->$method();
             if (is_array($implementsOrTrait) && in_array($fullQualifiedNamespace, $implementsOrTrait)) {
                 $phpClasses[] = $phpClass;
-                $phpClasses   = array_merge($phpClasses, $this->findExtends($phpClass->getFullQualifiedNamespace(), $directory));
+                $phpClasses   = array_merge($phpClasses, $this->findExtends($phpClass->getFullQualifiedNamespace()));
             }
         }
 
         return $this->arrayUniqueObject($phpClasses);
-    }
-
-    /**
-     * @param $directory
-     * @param $classes
-     * @param $interfaces
-     * @param $traits
-     * @return bool|PhpClass[]
-     */
-    public function findMultiple($directory, $classes = [], $interfaces = [], $traits = []) {
-        $classes    = $this->normalizeArray($classes);
-        $interfaces = $this->normalizeArray($interfaces);
-        $traits     = $this->normalizeArray($traits);
-
-        $foundClasses = [];
-
-        if ($classes !== false) {
-            foreach ($classes as $class) {
-                $foundClasses = array_merge($foundClasses, $this->findExtends($class, $directory));
-            }
-        }
-
-        if ($interfaces !== false) {
-            foreach ($interfaces as $interface) {
-                $foundClasses = array_merge($foundClasses, $this->findImplements($interface, $directory));
-            }
-        }
-
-        if ($traits !== false) {
-            foreach ($traits as $trait) {
-                $foundClasses = array_merge($foundClasses, $this->findTraitUse($trait, $directory));
-            }
-        }
-
-        return $this->arrayUniqueObject($foundClasses);
     }
 
     /**
@@ -202,5 +159,11 @@ class InheritanceFinder implements InheritanceFinderInterface
         }
 
         return $array;
+    }
+
+    protected function init() {
+        if (empty($this->localCache)) {
+            $this->localCache = $this->cacheBuilder->getCache();
+        }
     }
 }

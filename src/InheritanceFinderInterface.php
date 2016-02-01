@@ -1,62 +1,56 @@
 <?php
+/**
+ * Synga Inheritance Finder
+ * @author      Roy Pouls
+ * @copytright  2016 Roy Pouls / Synga (http://www.synga.nl)
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
+ * @link        https://github.com/synga-nl/inheritance-finder
+ */
+
 namespace Synga\InheritanceFinder;
 
-use Synga\InheritanceFinder\Cache\CacheRetriever;
+
+use Synga\InheritanceFinder\PhpClass;
 
 interface InheritanceFinderInterface
 {
     /**
      * Finds the given class
      *
-     * @param $fullQualifiedNamespace
-     * @param $directory
+     * @param $class
      * @return PhpClass
      */
-    public function findClass($fullQualifiedNamespace, $directory);
+    public function findClass($class);
 
     /**
      * Finds classes which extend the given class
      *
-     * @param $fullQualifiedNamespace
-     * @param $directory
+     * @param $class
      * @return PhpClass[]
      */
-    public function findExtends($fullQualifiedNamespace, $directory);
+    public function findExtends($class);
 
     /**
      * Finds classes which implements the given interface
      *
-     * @param $fullQualifiedNamespace
-     * @param $directory
+     * @param $interface
      * @return PhpClass[]
      */
-    public function findImplements($fullQualifiedNamespace, $directory);
+    public function findImplements($interface);
 
     /**
      * Finds classes which uses the given trait
      *
-     * @param $fullQualifiedNamespace
-     * @param $directory
-     * @return array
+     * @param $trait
+     * @return PhpClass[]
      */
-    public function findTraitUse($fullQualifiedNamespace, $directory);
+    public function findTraitUse($trait);
 
     /**
-     * Gets the cache retriever
-     *
-     * @return CacheRetriever
+     * @param $classes
+     * @param $interfaces
+     * @param $traits
+     * @return bool|PhpClass[]
      */
-    public function getCacheRetriever();
-
-    /**
-     * Can find multiple classes, interface and traits. Use this method with care because this can be harsh on your
-     * hardware.
-     *
-     * @param $directory
-     * @param array $classes
-     * @param array $interfaces
-     * @param array $traits
-     * @return mixed
-     */
-    public function findMultiple($directory, $classes = [], $interfaces = [], $traits =[]);
+    public function findMultiple($classes = [], $interfaces = [], $traits = []);
 }
