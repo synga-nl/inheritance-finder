@@ -79,17 +79,16 @@ class CacheBuilder implements CacheBuilderInterface
                 $cache['data'][] = $this->parseSplFileInfo($file, $phpClassClone);
             }
         } else {
+
             $pathnameArray  = $this->arrayHelper->getPathnameArray($cache['data']);
             $this->removeNonExistentClasses($pathnameArray);
             $this->addNewClasses($pathnameArray, (($cache['composer_lock_md5'] == $this->getComposerLockMd5()) ? true : false), $phpClassClone);
             $this->modifyModifiedClasses($pathnameArray);
-
             $cache['data'] = array_values($pathnameArray);
-
-            $this->setCache($cacheKey, $cache);
         }
 
         $cache['data'] = array_filter($cache['data']);
+
 
         $this->setCache($cacheKey, $cache);
 
