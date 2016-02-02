@@ -10,6 +10,10 @@
 namespace Synga\InheritanceFinder;
 
 
+/**
+ * Interface CacheStrategyInterface
+ * @package Synga\InheritanceFinder
+ */
 interface CacheStrategyInterface
 {
     /**

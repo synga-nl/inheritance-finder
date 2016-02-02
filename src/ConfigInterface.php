@@ -10,9 +10,24 @@
 namespace Synga\InheritanceFinder;
 
 
+/**
+ * Interface ConfigInterface
+ * @package Synga\InheritanceFinder
+ */
 interface ConfigInterface
 {
+    /**
+     * Gets the application root of this application
+     *
+     * @return mixed
+     */
     public function getApplicationRoot();
 
+    /**
+     * Sets the application root of this application
+     *
+     * @param $applicationRoot
+     * @return mixed
+     */
     public function setApplicationRoot($applicationRoot);
 }

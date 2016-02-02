@@ -13,28 +13,41 @@ namespace Synga\InheritanceFinder;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 use Synga\InheritanceFinder\Parser\PhpClassParser;
-use Synga\InheritanceFinder\PhpClass;
 use Synga\InheritanceFinder\Helpers\FastArrayAccessHelper;
 
+/**
+ * Class CacheBuilder
+ * @package Synga\InheritanceFinder
+ */
 class CacheBuilder implements CacheBuilderInterface
 {
     /**
      * @var CacheStrategyInterface
      */
     private $cacheStrategy;
+
     /**
      * @var Finder
      */
     private $finder;
+
     /**
      * @var PhpClassParser
      */
     private $phpClassParser;
+
     /**
      * @var FastArrayAccessHelper
      */
     private $arrayHelper;
 
+    /**
+     * CacheBuilder constructor.
+     * @param CacheStrategyInterface $cacheStrategy
+     * @param PhpClassParser $phpClassParser
+     * @param Finder $finder
+     * @param FastArrayAccessHelper $arrayHelper
+     */
     public function __construct(CacheStrategyInterface $cacheStrategy, PhpClassParser $phpClassParser, Finder $finder, FastArrayAccessHelper $arrayHelper) {
         $this->cacheStrategy  = $cacheStrategy;
         $this->finder         = $finder;
@@ -42,6 +55,9 @@ class CacheBuilder implements CacheBuilderInterface
         $this->arrayHelper    = $arrayHelper;
     }
 
+    /**
+     * @return mixed
+     */
     public function getCache() {
         $cacheKey = md5('inheritance_finder');
 
@@ -51,6 +67,12 @@ class CacheBuilder implements CacheBuilderInterface
         return $cache['data'];
     }
 
+    /**
+     * @param $cacheKey
+     * @param $cache
+     * @param \Synga\InheritanceFinder\PhpClass $phpClassClone
+     * @return mixed
+     */
     protected function build($cacheKey, $cache, PhpClass $phpClassClone) {
         if (empty($cache)) {
             foreach ($this->findFiles() as $file) {
@@ -74,6 +96,11 @@ class CacheBuilder implements CacheBuilderInterface
         return $cache;
     }
 
+    /**
+     * @param SplFileInfo $fileInfo
+     * @param \Synga\InheritanceFinder\PhpClass $phpClassClone
+     * @return \Synga\InheritanceFinder\PhpClass
+     */
     protected function parseSplFileInfo(SplFileInfo $fileInfo, PhpClass $phpClassClone) {
         $phpClass = clone $phpClassClone;
         $result   = $this->phpClassParser->parse($phpClass, $fileInfo);
@@ -145,6 +172,10 @@ class CacheBuilder implements CacheBuilderInterface
         }
     }
 
+    /**
+     * @param bool $excludeVendor
+     * @return Finder
+     */
     protected function findFiles($excludeVendor = false) {
         $finder = $this->finder->create();
         $finder->files()->name('*.php')->contains('class')->contains('trait')->contains('interface');
@@ -155,6 +186,10 @@ class CacheBuilder implements CacheBuilderInterface
         return $finder->in($this->cacheStrategy->getConfig()->getApplicationRoot());
     }
 
+    /**
+     * @param $cacheKey
+     * @param $cache
+     */
     protected function setCache($cacheKey, $cache) {
         $this->cacheStrategy->set($cacheKey, [
             'timestamp'         => time(),
@@ -163,6 +198,9 @@ class CacheBuilder implements CacheBuilderInterface
         ]);
     }
 
+    /**
+     * @return string
+     */
     protected function getComposerLockMd5() {
         return md5_file($this->cacheStrategy->getConfig()->getApplicationRoot() . '/composer.lock');
     }

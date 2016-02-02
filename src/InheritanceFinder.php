@@ -9,9 +9,10 @@
 
 namespace Synga\InheritanceFinder;
 
-
-use Synga\InheritanceFinder\PhpClass;
-
+/**
+ * Class InheritanceFinder
+ * @package Synga\InheritanceFinder
+ */
 class InheritanceFinder implements InheritanceFinderInterface
 {
     /**
@@ -24,19 +25,42 @@ class InheritanceFinder implements InheritanceFinderInterface
      */
     private $localCache = [];
 
+    /**
+     * InheritanceFinder constructor.
+     * @param CacheBuilderInterface $cacheBuilder
+     */
     public function __construct(CacheBuilderInterface $cacheBuilder) {
         $this->cacheBuilder = $cacheBuilder;
     }
 
+    /**
+     * Finds a $class file
+     *
+     * @param $class
+     * @return PhpClass
+     */
     public function findClass($class) {
         $this->init();
+
+        foreach ($this->localCache as $phpClass) {
+            if ($class === $phpClass->getFullQualifiedNamespace()) {
+                return $phpClass;
+            }
+        }
+
+        return false;
     }
 
+    /**
+     * Finds all classes which extend $class
+     *
+     * @param $class
+     * @return array
+     */
     public function findExtends($class) {
         $this->init();
 
-
-        $fullQualifiedNamespace = ltrim($class, '\\');
+        $fullQualifiedNamespace = $this->trimNamespace($class);
 
         $phpClasses = [];
 
@@ -50,18 +74,38 @@ class InheritanceFinder implements InheritanceFinderInterface
         return $this->arrayUniqueObject($phpClasses);
     }
 
+    /**
+     * Finds all classes which impelements $interface
+     *
+     * @param $interface
+     * @return array
+     */
     public function findImplements($interface) {
         $this->init();
 
         return $this->findImplementsOrTraitUse($interface, 'traits');
     }
 
+    /**
+     * Finds all classes which use $trait
+     *
+     * @param $trait
+     * @return array
+     */
     public function findTraitUse($trait) {
         $this->init();
 
         return $this->findImplementsOrTraitUse($trait, 'traits');
     }
 
+    /**
+     * Can find multiple classes at once.
+     *
+     * @param array $classes
+     * @param array $interfaces
+     * @param array $traits
+     * @return array
+     */
     public function findMultiple($classes = [], $interfaces = [], $traits = []) {
         $this->init();
 
@@ -96,12 +140,11 @@ class InheritanceFinder implements InheritanceFinderInterface
      * Can find implements or detect trait use
      *
      * @param $fullQualifiedNamespace
-     * @param $directory
      * @param $type
      * @return array
      */
     protected function findImplementsOrTraitUse($fullQualifiedNamespace, $type) {
-        $fullQualifiedNamespace = ltrim($fullQualifiedNamespace, '\\');
+        $fullQualifiedNamespace = $this->trimNamespace($fullQualifiedNamespace);
 
         $phpClasses = [];
 
@@ -161,9 +204,22 @@ class InheritanceFinder implements InheritanceFinderInterface
         return $array;
     }
 
+    /**
+     * Loads the cache so we can use it in all the "find" methods
+     */
     protected function init() {
         if (empty($this->localCache)) {
             $this->localCache = $this->cacheBuilder->getCache();
         }
+    }
+
+    /**
+     * Trims the first "\" which is copied default by PhpStorm (copy reference)
+     *
+     * @param $class
+     * @return string
+     */
+    protected function trimNamespace($class) {
+        return ltrim($class, '\\');
     }
 }

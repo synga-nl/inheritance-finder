@@ -10,9 +10,16 @@
 namespace Synga\InheritanceFinder\Helpers;
 
 
+/**
+ * Class FastArrayAccessHelper
+ * @package Synga\InheritanceFinder\Helpers
+ */
 class FastArrayAccessHelper
 {
     /**
+     * Can transform a normal array in a pathname array. This means that the key of the array is the path to the class
+     * and the value is a PhpClass
+     *
      * @param \Synga\InheritanceFinder\PhpClass[]
      * @return \Synga\InheritanceFinder\PhpClass[]
      */

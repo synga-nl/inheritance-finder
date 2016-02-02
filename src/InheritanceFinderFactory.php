@@ -14,7 +14,7 @@ use Synga\InheritanceFinder\Parser\Visitors\ClassNodeVisitor;
 class InheritanceFinderFactory
 {
     /**
-     * Makes an InheritanceFinder
+     * Makes an InheritanceFinder base on $config
      *
      * @param ConfigInterface $config
      * @return InheritanceFinder

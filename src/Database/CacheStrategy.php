@@ -12,6 +12,10 @@ namespace Synga\InheritanceFinder\Database;
 
 use Synga\InheritanceFinder\CacheStrategyInterface;
 
+/**
+ * Class CacheStrategy
+ * @package Synga\InheritanceFinder\Database
+ */
 class CacheStrategy implements CacheStrategyInterface
 {
     /**
@@ -19,14 +23,27 @@ class CacheStrategy implements CacheStrategyInterface
      */
     private $config;
 
+    /**
+     * CacheStrategy constructor.
+     * @param DatabaseConfig $config
+     */
     public function __construct(DatabaseConfig $config) {
         $this->config = $config;
     }
 
+    /**
+     * @param $key
+     * @return array|void
+     */
     public function get($key) {
         // TODO: Implement get() method.
     }
 
+    /**
+     * @param $key
+     * @param $value
+     * @return mixed|void
+     */
     public function set($key, $value) {
         // TODO: Implement set() method.
     }

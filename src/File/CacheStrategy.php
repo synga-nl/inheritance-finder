@@ -12,6 +12,10 @@ namespace Synga\InheritanceFinder\File;
 
 use Synga\InheritanceFinder\CacheStrategyInterface;
 
+/**
+ * Class CacheStrategy
+ * @package Synga\InheritanceFinder\File
+ */
 class CacheStrategy implements CacheStrategyInterface
 {
     /**
@@ -19,10 +23,18 @@ class CacheStrategy implements CacheStrategyInterface
      */
     private $config;
 
+    /**
+     * CacheStrategy constructor.
+     * @param FileConfig $config
+     */
     public function __construct(FileConfig $config) {
         $this->config = $config;
     }
 
+    /**
+     * @param $key
+     * @return array|mixed
+     */
     public function get($key) {
         $cachePath = $this->getCachePath($key);
         if (file_exists($cachePath)) {
@@ -37,14 +49,26 @@ class CacheStrategy implements CacheStrategyInterface
         return $cache;
     }
 
+    /**
+     * @param $key
+     * @param $value
+     * @return bool
+     */
     public function set($key, $value) {
         return (file_put_contents($this->getCachePath($key), serialize($value)) !== false);
     }
 
+    /**
+     * @param $key
+     * @return string
+     */
     protected function getCachePath($key) {
         return $this->config->getApplicationRoot() . DIRECTORY_SEPARATOR . $key . '.cache';
     }
 
+    /**
+     * @return FileConfig
+     */
     public function getConfig() {
         return $this->config;
     }

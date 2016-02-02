@@ -10,8 +10,10 @@
 namespace Synga\InheritanceFinder;
 
 
-use Synga\InheritanceFinder\PhpClass;
-
+/**
+ * Interface InheritanceFinderInterface
+ * @package Synga\InheritanceFinder
+ */
 interface InheritanceFinderInterface
 {
     /**

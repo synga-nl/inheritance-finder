@@ -10,7 +10,16 @@
 namespace Synga\InheritanceFinder;
 
 
+/**
+ * Interface CacheBuilderInterface
+ * @package Synga\InheritanceFinder
+ */
 interface CacheBuilderInterface
 {
+    /**
+     * Gets the cache
+     *
+     * @return mixed
+     */
     public function getCache();
 }
