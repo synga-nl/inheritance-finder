@@ -86,7 +86,7 @@ class CacheBuilder implements CacheBuilderInterface
 
             $cache['data'] = array_values($pathnameArray);
 
-            $this->setCache($cacheKey, $cache['data']);
+            $this->setCache($cacheKey, $cache);
         }
 
         $cache['data'] = array_filter($cache['data']);
