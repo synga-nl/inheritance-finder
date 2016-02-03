@@ -1,5 +1,5 @@
 # Inheritance Finder
-This package can find classes which are extended, implemented or is using a certain trait.
+This package can find classes which are extended, implemented or is using a certain trait. It builds a cache and uses it to find the desired files.
 
 ##Usage
 
@@ -24,5 +24,6 @@ It will now find all classes which inherit from class `SomeNamespace\OtherNamesp
 
 
 ##Acknowledgements:
-* Right now this package cannot handle multiple classes in one file. I will try to fix this in the near future
-* Right now you can't combine two search methods like searching for an interface and a trait. I am thinking of implement this.
+* Right now this package cannot handle multiple classes in one file. I will try to fix this in the near future.
+* The first two runs will be slow, because it is indexing all the files in your project root. I'm thinking if I can solve this. I am planning of using react php for this so we can use multiple processes.
+* Don't use this code in production (you can use it FOR production, to build a cache of files). The performance results are depending on the availability of your hardware.

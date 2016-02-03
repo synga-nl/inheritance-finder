@@ -75,20 +75,21 @@ class CacheBuilder implements CacheBuilderInterface
      */
     protected function build($cacheKey, $cache, PhpClass $phpClassClone) {
         if (empty($cache)) {
-            foreach ($this->findFiles() as $file) {
-                $cache['data'][] = $this->parseSplFileInfo($file, $phpClassClone);
+            foreach ($this->findFiles(false, true) as $file) {
+                $fileInfo = $this->parseSplFileInfo($file, $phpClassClone);
+                if (is_object($fileInfo)) {
+                    $cache['data'][] = $fileInfo;
+                } else {
+                    $cache['non_class_files'][$fileInfo['pathname']] = $fileInfo['md5'];
+                }
             }
         } else {
-
-            $pathnameArray  = $this->arrayHelper->getPathnameArray($cache['data']);
+            $pathnameArray = $this->arrayHelper->getPathnameArray($cache['data']);
             $this->removeNonExistentClasses($pathnameArray);
-            $this->addNewClasses($pathnameArray, (($cache['composer_lock_md5'] == $this->getComposerLockMd5()) ? true : false), $phpClassClone);
+            $this->addNewClasses($pathnameArray, $cache['non_class_files'], (($cache['composer_lock_md5'] == $this->getComposerLockMd5()) ? true : false), $phpClassClone);
             $this->modifyModifiedClasses($pathnameArray);
             $cache['data'] = array_values($pathnameArray);
         }
-
-        $cache['data'] = array_filter($cache['data']);
-
 
         $this->setCache($cacheKey, $cache);
 
@@ -106,6 +107,8 @@ class CacheBuilder implements CacheBuilderInterface
 
         if ($result !== false) {
             return $phpClass;
+        } else {
+            return ['pathname' => $fileInfo->getPathname(), 'md5' => md5_file($fileInfo->getPathname())];
         }
     }
 
@@ -129,8 +132,6 @@ class CacheBuilder implements CacheBuilderInterface
      *
      * @param phpClass[] $pathnameArray
      * @return \Synga\InheritanceFinder\PhpClass[]
-     *
-     * @todo make use of the pathnameArray so duplicate namespaces are not lost.
      */
     protected function modifyModifiedClasses(&$pathnameArray) {
         foreach ($pathnameArray as $pathname => $phpClass) {
@@ -154,18 +155,18 @@ class CacheBuilder implements CacheBuilderInterface
      * @param bool $excludeVendor
      * @param PhpClass $phpClassClone
      */
-    protected function addNewClasses(&$pathnameArray, $excludeVendor = true, PhpClass $phpClassClone) {
+    protected function addNewClasses(&$pathnameArray, $nonClassFiles, $excludeVendor = true, PhpClass $phpClassClone) {
         $files = $this->findFiles($excludeVendor);
 
         foreach ($files as $file) {
             /* @var $file \Symfony\Component\Finder\SplFileInfo */
             $pathname = $file->getPathname();
-            if (!isset($pathnameArray[$pathname])) {
+            if (!isset($pathnameArray[$pathname]) && (isset($nonClassFiles[$pathname]) && md5_file($file->getPathname()) !== $nonClassFiles[$pathname])) {
                 $phpClass = clone $phpClassClone;
                 $result   = $this->phpClassParser->parse($phpClass, $file);
 
                 if ($result !== false) {
-                    $pathnameArray[$pathname]                               = $phpClass;
+                    $pathnameArray[$pathname] = $phpClass;
                 }
             }
         }
@@ -175,11 +176,15 @@ class CacheBuilder implements CacheBuilderInterface
      * @param bool $excludeVendor
      * @return Finder
      */
-    protected function findFiles($excludeVendor = false) {
+    protected function findFiles($excludeVendor = false, $firstIndex = false) {
         $finder = $this->finder->create();
-        $finder->files()->name('*.php')->contains('class')->contains('trait')->contains('interface');
+        $finder->files()->name('*.php');
         if ($excludeVendor) {
             $finder->notPath('/^vendor/');
+        }
+
+        if ($firstIndex === true) {
+            $finder->contains('class')->contains('trait')->contains('interface');
         }
 
         return $finder->in($this->cacheStrategy->getConfig()->getApplicationRoot());
@@ -193,7 +198,8 @@ class CacheBuilder implements CacheBuilderInterface
         $this->cacheStrategy->set($cacheKey, [
             'timestamp'         => time(),
             'composer_lock_md5' => $this->getComposerLockMd5(),
-            'data'              => $cache['data']
+            'data'              => $cache['data'],
+            'non_class_files'   => $cache['non_class_files']
         ]);
     }
 
