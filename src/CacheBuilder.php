@@ -59,7 +59,7 @@ class CacheBuilder implements CacheBuilderInterface
      * @return mixed
      */
     public function getCache() {
-        $cacheKey = md5('inheritance_finder');
+        $cacheKey = md5($this->cacheStrategy->getConfig()->getApplicationRoot() . 'inheritance_finder');
 
         $retrievedCache = $this->cacheStrategy->get($cacheKey);
         $cache          = $this->build($cacheKey, $retrievedCache, new PhpClass());
@@ -199,7 +199,7 @@ class CacheBuilder implements CacheBuilderInterface
             'timestamp'         => time(),
             'composer_lock_md5' => $this->getComposerLockMd5(),
             'data'              => $cache['data'],
-            'non_class_files'   => $cache['non_class_files']
+            'non_class_files'   => (!empty($cache['non_class_files'])) ? $cache['non_class_files'] : []
         ]);
     }
 
@@ -207,6 +207,9 @@ class CacheBuilder implements CacheBuilderInterface
      * @return string
      */
     protected function getComposerLockMd5() {
-        return md5_file($this->cacheStrategy->getConfig()->getApplicationRoot() . '/composer.lock');
+        $path = $this->cacheStrategy->getConfig()->getApplicationRoot() . '/composer.lock';
+        if(file_exists($path)) {
+            return md5_file($path);
+        }
     }
 }

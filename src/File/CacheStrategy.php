@@ -63,7 +63,7 @@ class CacheStrategy implements CacheStrategyInterface
      * @return string
      */
     protected function getCachePath($key) {
-        return $this->config->getApplicationRoot() . DIRECTORY_SEPARATOR . $key . '.cache';
+        return $this->config->getCacheDirectory() . DIRECTORY_SEPARATOR . $key . '.cache';
     }
 
     /**
