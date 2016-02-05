@@ -83,7 +83,7 @@ class InheritanceFinder implements InheritanceFinderInterface
     public function findImplements($interface) {
         $this->init();
 
-        return $this->findImplementsOrTraitUse($interface, 'traits');
+        return $this->findImplementsOrTraitUse($interface, 'implements');
     }
 
     /**
