@@ -42,8 +42,10 @@ class InheritanceFinder implements InheritanceFinderInterface
     public function findClass($class) {
         $this->init();
 
+        $fullQualifiedNamespace = $this->trimNamespace($class);
+
         foreach ($this->localCache as $phpClass) {
-            if ($class === $phpClass->getFullQualifiedNamespace()) {
+            if ($fullQualifiedNamespace === $phpClass->getFullQualifiedNamespace()) {
                 return $phpClass;
             }
         }
