@@ -101,6 +101,21 @@ class InheritanceFinder implements InheritanceFinderInterface
     }
 
     /**
+     * Checks if $child is in the lineage of $parent
+     *
+     * @param $child
+     * @param $parent
+     * @return mixed
+     */
+    public function isSubclassOf($child, $parent) {
+        try {
+            return is_subclass_of($child, $parent);
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    /**
      * Can find multiple classes at once.
      *
      * @param array $classes

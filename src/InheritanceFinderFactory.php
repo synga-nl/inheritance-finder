@@ -17,7 +17,7 @@ class InheritanceFinderFactory
      * Makes an InheritanceFinder base on $config
      *
      * @param ConfigInterface $config
-     * @return InheritanceFinder
+     * @return InheritanceFinderInterface
      */
     public static function getInheritanceFinder(ConfigInterface $config) {
         if($config instanceof FileConfig){

@@ -49,6 +49,15 @@ interface InheritanceFinderInterface
     public function findTraitUse($trait);
 
     /**
+     * Checks if $child is in the lineage of $parent
+     *
+     * @param $child
+     * @param $parent
+     * @return mixed
+     */
+    public function isSubclassOf($child, $parent);
+
+    /**
      * @param $classes
      * @param $interfaces
      * @param $traits
