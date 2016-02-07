@@ -57,7 +57,7 @@ class InheritanceFinder implements InheritanceFinderInterface
      * Finds all classes which extend $class
      *
      * @param $class
-     * @return array
+     * @return PhpClass[]
      */
     public function findExtends($class) {
         $this->init();
@@ -80,7 +80,7 @@ class InheritanceFinder implements InheritanceFinderInterface
      * Finds all classes which impelements $interface
      *
      * @param $interface
-     * @return array
+     * @return PhpClass[]
      */
     public function findImplements($interface) {
         $this->init();
@@ -92,7 +92,7 @@ class InheritanceFinder implements InheritanceFinderInterface
      * Finds all classes which use $trait
      *
      * @param $trait
-     * @return array
+     * @return PhpClass[]
      */
     public function findTraitUse($trait) {
         $this->init();
@@ -106,7 +106,7 @@ class InheritanceFinder implements InheritanceFinderInterface
      * @param array $classes
      * @param array $interfaces
      * @param array $traits
-     * @return array
+     * @return PhpClass[]
      */
     public function findMultiple($classes = [], $interfaces = [], $traits = []) {
         $this->init();
@@ -143,7 +143,7 @@ class InheritanceFinder implements InheritanceFinderInterface
      *
      * @param $fullQualifiedNamespace
      * @param $type
-     * @return array
+     * @return PhpClass[]
      */
     protected function findImplementsOrTraitUse($fullQualifiedNamespace, $type) {
         $fullQualifiedNamespace = $this->trimNamespace($fullQualifiedNamespace);
