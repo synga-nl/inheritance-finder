@@ -99,7 +99,7 @@ class CacheBuilder implements CacheBuilderInterface
     /**
      * @param SplFileInfo $fileInfo
      * @param \Synga\InheritanceFinder\PhpClass $phpClassClone
-     * @return \Synga\InheritanceFinder\PhpClass
+     * @return \Synga\InheritanceFinder\PhpClass|array
      */
     protected function parseSplFileInfo(SplFileInfo $fileInfo, PhpClass $phpClassClone) {
         $phpClass = clone $phpClassClone;
@@ -155,18 +155,20 @@ class CacheBuilder implements CacheBuilderInterface
      * @param bool $excludeVendor
      * @param PhpClass $phpClassClone
      */
-    protected function addNewClasses(&$pathnameArray, $nonClassFiles, $excludeVendor = true, PhpClass $phpClassClone) {
+    protected function addNewClasses(&$pathnameArray, &$nonClassFiles, $excludeVendor = true, PhpClass $phpClassClone) {
         $files = $this->findFiles($excludeVendor);
 
         foreach ($files as $file) {
             /* @var $file \Symfony\Component\Finder\SplFileInfo */
             $pathname = $file->getPathname();
-            if (!isset($pathnameArray[$pathname]) && (isset($nonClassFiles[$pathname]) && md5_file($file->getPathname()) !== $nonClassFiles[$pathname])) {
-                $phpClass = clone $phpClassClone;
-                $result   = $this->phpClassParser->parse($phpClass, $file);
 
-                if ($result !== false) {
-                    $pathnameArray[$pathname] = $phpClass;
+            if ((!isset($pathnameArray[$pathname]) && !isset($nonClassFiles[$pathname])) || (isset($nonClassFiles[$pathname]) && md5_file($file->getPathname()) !== $nonClassFiles[$pathname])) {
+                $phpClass = clone $phpClassClone;
+                $fileInfo = $this->parseSplFileInfo($file, $phpClass);
+                if (is_object($fileInfo)) {
+                    $pathnameArray[$pathname] = $fileInfo;
+                } else {
+                    $nonClassFiles[$fileInfo['pathname']] = $fileInfo['md5'];
                 }
             }
         }
@@ -208,7 +210,7 @@ class CacheBuilder implements CacheBuilderInterface
      */
     protected function getComposerLockMd5() {
         $path = $this->cacheStrategy->getConfig()->getApplicationRoot() . '/composer.lock';
-        if(file_exists($path)) {
+        if (file_exists($path)) {
             return md5_file($path);
         }
     }
