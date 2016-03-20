@@ -10,16 +10,6 @@ namespace Synga\InheritanceFinder;
 trait NamespaceHelper
 {
     /**
-     * Escapes the namespace full qualified namespace so we can use it in a regex
-     *
-     * @param $fullQualifiedNamespace
-     * @return string
-     */
-    protected function escapeNamespace($fullQualifiedNamespace) {
-        return implode('\\\\', explode('\\', $fullQualifiedNamespace));
-    }
-
-    /**
      * Concats the namespace and the class to the full qualified namespace
      *
      * @param $namespace
