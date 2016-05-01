@@ -25,5 +25,5 @@ It will now find all classes which inherit from class `SomeNamespace\OtherNamesp
 
 ##Acknowledgements:
 * Right now this package cannot handle multiple classes in one file. I will try to fix this in the near future.
-* The first two runs will be slow, because it is indexing all the files in your project root. I'm thinking if I can solve this. I am planning of using react php for this so we can use multiple processes.
+* The first run will be slow, because it is indexing all the files in your project root. I'm thinking off a manner to make it faster. I am planning of using react php for this so we can use multiple processes.
 * Don't use this code in production (you can use it FOR production, to build a cache of files). The performance results are strongly depending your hardware.

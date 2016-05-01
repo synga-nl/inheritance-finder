@@ -75,7 +75,7 @@ class CacheBuilder implements CacheBuilderInterface
      */
     protected function build($cacheKey, $cache, PhpClass $phpClassClone) {
         if (empty($cache)) {
-            foreach ($this->findFiles(false, true) as $file) {
+            foreach ($this->findFiles(false) as $file) {
                 $fileInfo = $this->parseSplFileInfo($file, $phpClassClone);
                 if (is_object($fileInfo)) {
                     $cache['data'][] = $fileInfo;
@@ -178,15 +178,11 @@ class CacheBuilder implements CacheBuilderInterface
      * @param bool $excludeVendor
      * @return Finder
      */
-    protected function findFiles($excludeVendor = false, $firstIndex = false) {
+    protected function findFiles($excludeVendor = false) {
         $finder = $this->finder->create();
         $finder->files()->name('*.php');
         if ($excludeVendor) {
             $finder->notPath('/^vendor/');
-        }
-
-        if ($firstIndex === true) {
-            $finder->contains('class')->contains('trait')->contains('interface');
         }
 
         return $finder->in($this->cacheStrategy->getConfig()->getApplicationRoot());
