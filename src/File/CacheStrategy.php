@@ -66,7 +66,7 @@ class CacheStrategy implements CacheStrategyInterface
         $cacheDirectory = $this->config->getCacheDirectory();
 
         if(!file_exists($cacheDirectory)){
-            mkdir($cacheDirectory, 0777, true);
+            mkdir($cacheDirectory, 0775, true);
         }
 
         return $cacheDirectory . DIRECTORY_SEPARATOR . $key . '.cache';
